@@ -40,3 +40,15 @@ class UnboundedError(SolverError):
 class DualsUnavailableError(TruffleError):
     """Raised when dual values are requested but the problem has not been solved
     (or was solved with a method that does not produce duals, e.g. MIP)."""
+
+
+class ParseFailedError(TruffleError):
+    """Raised when the LLM cannot produce a valid ParseResult even after
+    structured-output repair attempts. The chat loop catches this and asks
+    the user to rephrase rather than crashing the session."""
+
+
+class GroundingFailedError(TruffleError):
+    """Raised when an LLM-generated explanation contains numerals that are
+    not present in the SolutionReport, even after one repair attempt. The
+    chat loop falls back to a deterministic template summary."""
