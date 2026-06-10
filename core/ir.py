@@ -65,7 +65,35 @@ class MeanVariance(_IRModel):
     problem_class_impact: ClassVar[ProblemClassImpact] = "convex"
 
 
-Objective = Annotated[MinVariance | MeanVariance, Field(discriminator="kind")]
+class MinCVaR(_IRModel):
+    """Minimum-CVaR objective via the Rockafellar–Uryasev LP reformulation.
+
+    For S equally-likely return scenarios ``r_s`` (per-period, *return*
+    convention, not loss), the CVaR at level ``cvar_alpha`` of portfolio
+    losses ``L_s = -r_s · w`` reduces to the LP
+
+        min  t + (1/((1-α)S)) Σ z_s
+        s.t. z_s ≥ −r_s·w − t,   z_s ≥ 0
+
+    The optimal ``t`` is the VaR; the objective value is the CVaR. Per
+    BLUEPRINT §5, this is the crown-jewel objective that differentiates
+    Truffle from PyPortfolioOpt-style libraries.
+    """
+
+    kind: Literal["min_cvar"] = "min_cvar"
+    cvar_alpha: float = Field(
+        default=0.95,
+        gt=0.0,
+        lt=1.0,
+        description="Confidence level α (0 < α < 1). Typical values: 0.90, 0.95, 0.99.",
+    )
+    problem_class_impact: ClassVar[ProblemClassImpact] = "convex"
+
+
+Objective = Annotated[
+    MinVariance | MeanVariance | MinCVaR,
+    Field(discriminator="kind"),
+]
 
 
 # ---------------------------------------------------------------------------
