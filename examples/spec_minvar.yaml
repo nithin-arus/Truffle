@@ -1,0 +1,26 @@
+# Truffle Sprint 1 example spec.
+# Solves a long-only minimum-variance portfolio on the bundled 5-asset
+# synthetic price panel, with a 35% cap on the lowest-vol asset so the cap
+# is binding (you'll see a positive shadow price on this constraint).
+
+universe:
+  - AAA
+  - BBB
+  - CCC
+  - DDD
+  - EEE
+
+objective:
+  kind: min_variance
+
+constraints:
+  - kind: budget
+    id: fully_invested
+    total: 1.0
+  - kind: long_only
+    id: no_shorts
+  - kind: box
+    id: cap_lowvol_asset
+    lower: 0.0
+    upper: 0.35
+    tickers: [AAA]
